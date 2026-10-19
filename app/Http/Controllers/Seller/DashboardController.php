@@ -14,17 +14,27 @@ class DashboardController extends Controller
     public function index()
     {
         $seller = Auth::user();
+        $totalEarnings    = $seller->totalEarnings();
+        $totalWithdrawn   = $seller->totalWithdrawn();
+        $availableBalance = $seller->availableBalance();
+
         $stats  = [
-            'total_gigs'    => $seller->gigs()->count(),
-            'active_gigs'   => $seller->gigs()->where('status','active')->count(),
-            'total_orders'  => $seller->sellerOrders()->count(),
-            'pending'       => $seller->sellerOrders()->where('status','pending')->count(),
-            'in_progress'   => $seller->sellerOrders()->where('status','in_progress')->count(),
-            'completed'     => $seller->sellerOrders()->where('status','completed')->count(),
-            'earnings'      => $seller->sellerOrders()->where('status','completed')->sum('price'),
+            'total_gigs'        => $seller->gigs()->count(),
+            'active_gigs'       => $seller->gigs()->where('status','active')->count(),
+            'total_orders'      => $seller->sellerOrders()->count(),
+            'pending'           => $seller->sellerOrders()->where('status','pending')->count(),
+            'in_progress'       => $seller->sellerOrders()->where('status','in_progress')->count(),
+            'completed'         => $seller->sellerOrders()->where('status','completed')->count(),
+            'earnings'          => $totalEarnings,
+            'earnings_bdt'      => $totalEarnings * 120,
+            'withdrawn'         => $totalWithdrawn,
+            'withdrawn_bdt'     => $totalWithdrawn * 120,
+            'available_balance' => $availableBalance,
+            'available_bdt'     => $availableBalance * 120,
         ];
         $recentOrders = $seller->sellerOrders()->with(['buyer','gig'])->latest()->take(6)->get();
-        return view('seller.dashboard', compact('stats','recentOrders'));
+        $withdrawals  = $seller->withdrawals()->latest()->take(5)->get();
+        return view('seller.dashboard', compact('stats','recentOrders','withdrawals'));
     }
 
     /* ─── Gigs ─── */
@@ -178,5 +188,37 @@ class DashboardController extends Controller
 
         $user->update($data);
         return back()->with('success', 'Profile updated!');
+    }
+
+    public function withdraw(Request $request)
+    {
+        $seller = Auth::user();
+        $available = $seller->availableBalance();
+
+        $data = $request->validate([
+            'amount'          => 'required|numeric|min:1',
+            'method'          => 'required|string|in:bKash,Nagad,Rocket,Bank Transfer,PayPal',
+            'account_details' => 'required|string|max:255',
+            'note'            => 'nullable|string|max:255',
+        ]);
+
+        if ($data['amount'] > $available) {
+            return back()->with('error', 'Withdrawal amount ($' . number_format($data['amount'], 2) . ') exceeds your available balance ($' . number_format($available, 2) . ' / ৳' . number_format($available * 120, 0) . ' BDT).');
+        }
+
+        $amountBdt = $data['amount'] * 120; // 1 USD ~ 120 BDT
+
+        \App\Models\Withdrawal::create([
+            'user_id'         => $seller->id,
+            'amount'          => $data['amount'],
+            'currency'        => 'USD',
+            'amount_bdt'      => $amountBdt,
+            'method'          => $data['method'],
+            'account_details' => $data['account_details'],
+            'status'          => 'pending',
+            'note'            => $data['note'] ?? null,
+        ]);
+
+        return back()->with('success', 'Withdrawal request for $' . number_format($data['amount'], 2) . ' (৳' . number_format($amountBdt, 0) . ' BDT) via ' . $data['method'] . ' has been submitted! It is now pending admin approval.');
     }
 }

@@ -59,7 +59,7 @@
     </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 400px;gap:2.5rem;align-items:start;">
+<div class="gig-detail-grid">
     <!-- Left Column: Media & Information -->
     <div>
         <!-- Main Gig Image / Showcase -->
@@ -104,7 +104,7 @@
                     </div>
                 </div>
 
-                <div style="border:1px solid var(--border);border-radius:6px;padding:1rem;background:#f8fafc;display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:0.85rem;">
+                <div class="seller-meta-grid" style="border:1px solid var(--border);border-radius:6px;padding:1rem;background:#f8fafc;gap:1rem;font-size:0.85rem;">
                     <div>
                         <span style="color:var(--muted);">From:</span>
                         <div style="font-weight:700;color:var(--dark);margin-top:2px;">{{ $gig->seller->country ?? 'Global' }}</div>
@@ -163,7 +163,7 @@
     </div>
 
     <!-- Right Sticky Column: Fiverr Iconic 3-Tab Pricing Package Box -->
-    <div style="position:sticky;top:90px;">
+    <div style="position:sticky;top:90px;" id="pricingCard">
         <div class="card" style="border:1px solid var(--border);box-shadow:var(--shadow-md);">
             <!-- Package Tabs -->
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);text-align:center;background:#fafafa;">
@@ -238,6 +238,17 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Mobile Sticky Action Bar for Gig Detail -->
+<div class="mobile-gig-sticky-bar">
+    <div>
+        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;font-weight:700;">Starting at</div>
+        <div style="font-size:1.35rem;font-weight:800;color:var(--dark);">${{ number_format($gig->price_basic, 0) }}</div>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('pricingCard').scrollIntoView({behavior:'smooth'})" style="font-weight:700;padding:0.75rem 1.25rem;">
+        Select Package
+    </button>
 </div>
 
 <style>

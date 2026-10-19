@@ -17,7 +17,7 @@
     <p>Manage your account settings and preferences</p>
 </div>
 
-<div style="display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:start;">
+<div class="dashboard-split-grid">
     <div class="card">
         <div class="card-body" style="text-align:center;padding:2rem 1.5rem;">
             <div style="position:relative;display:inline-block;margin-bottom:1rem;">
@@ -54,7 +54,7 @@
 
             <form method="POST" action="{{ route('buyer.profile.update') }}" enctype="multipart/form-data">
                 @csrf
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+                <div class="grid-2col">
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
                         <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>

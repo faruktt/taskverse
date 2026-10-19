@@ -31,7 +31,7 @@
 <form method="POST" action="{{ route('seller.gigs.store') }}" enctype="multipart/form-data">
     @csrf
 
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.75rem;align-items:start;">
+    <div class="gig-form-layout">
         <div>
             <!-- Section 1: Gig Overview -->
             <div class="card mb-4">
@@ -69,7 +69,7 @@
                     <span class="material-icons-round" style="color:var(--primary);">inventory_2</span> Pricing &amp; Packages (Fiverr Standard)
                 </div>
                 <div class="card-body">
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                    <div class="packages-grid">
                         <!-- Basic -->
                         <div style="border:1px solid var(--border);border-radius:6px;padding:1rem;background:#fafafa;">
                             <div style="font-weight:700;font-size:0.9rem;color:var(--dark);margin-bottom:0.75rem;border-bottom:2px solid var(--primary);padding-bottom:4px;">

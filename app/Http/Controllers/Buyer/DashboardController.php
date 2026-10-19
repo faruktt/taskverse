@@ -116,24 +116,36 @@ class DashboardController extends Controller
     /* ─── Reviews ─── */
     public function storeReview(Request $request, Order $order)
     {
-        abort_if($order->buyer_id !== Auth::id() || $order->status !== 'completed', 403);
+        abort_if($order->buyer_id !== Auth::id() || !in_array($order->status, ['delivered', 'completed']), 403);
         $data = $request->validate([
             'rating'  => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:500',
         ]);
 
-        Review::create(array_merge($data, [
-            'order_id' => $order->id,
-            'gig_id'   => $order->gig_id,
-            'buyer_id' => Auth::id(),
-        ]));
+        Review::updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'gig_id'   => $order->gig_id,
+                'buyer_id' => Auth::id(),
+                'rating'   => $data['rating'],
+                'comment'  => $data['comment'] ?? null,
+            ]
+        );
 
-        // Update gig average
+        // Mark order as completed if it was delivered
+        if ($order->status !== 'completed') {
+            $order->update(['status' => 'completed']);
+        }
+
+        // Update gig average rating and total reviews
         $gig = $order->gig;
         $avg = $gig->reviews()->avg('rating');
-        $gig->update(['avg_rating' => round($avg,2), 'total_reviews' => $gig->reviews()->count()]);
+        $gig->update([
+            'avg_rating'    => round($avg, 2),
+            'total_reviews' => $gig->reviews()->count(),
+        ]);
 
-        return back()->with('success', 'Review submitted!');
+        return back()->with('success', 'Thank you! Your review has been submitted and published on this Gig.');
     }
 
     public function profile()

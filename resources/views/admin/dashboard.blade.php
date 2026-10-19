@@ -8,6 +8,21 @@
     <p>Real-time marketplace activity and operational statistics</p>
 </div>
 
+@if(($stats['pending_withdrawals'] ?? 0) > 0)
+    <div style="background:#fffbeb;border:1.5px solid #fde047;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span class="material-icons-round" style="color:#d97706;font-size:28px;">account_balance_wallet</span>
+            <div>
+                <strong style="color:#92400e;font-size:0.95rem;">Pending Freelancer Withdrawals</strong>
+                <div style="font-size:0.82rem;color:#b45309;">There are {{ $stats['pending_withdrawals'] }} pending payout request(s) awaiting review and approval.</div>
+            </div>
+        </div>
+        <a href="{{ route('admin.withdrawals', ['status' => 'pending']) }}" class="btn btn-primary btn-sm" style="background:#d97706;border-color:#d97706;font-weight:700;">
+            Review Withdrawals
+        </a>
+    </div>
+@endif
+
 <!-- Stats Grid -->
 <div class="stats-grid">
     <div class="stat-card">
@@ -48,11 +63,11 @@
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(239,68,68,0.15);color:var(--error);"><span class="material-icons-round">block</span></div>
         <div class="stat-value">{{ $stats['banned_users'] }}</div>
-        <div class="stat-label">Suspended Users</div>
+        <div class="stat-label">Inactive Users</div>
     </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;">
+<div class="grid-2col" style="margin-top:2rem;">
     <!-- Recent Orders -->
     <div class="card">
         <div class="card-header flex justify-between items-center">
@@ -139,7 +154,7 @@
                                 <td style="font-size:0.8rem;color:var(--text-muted);">{{ $user->created_at->diffForHumans() }}</td>
                                 <td>
                                     @if($user->is_banned)
-                                        <span class="badge badge-error">Suspended</span>
+                                        <span class="badge badge-error">Inactive</span>
                                     @else
                                         <span class="badge badge-success">Active</span>
                                     @endif

@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+<div class="gig-form-layout">
     <!-- Categories List -->
     <div class="card">
         <div class="card-header"><span class="material-icons-round" style="vertical-align:middle;font-size:18px;">category</span> Existing Categories ({{ $categories->count() }})</div>

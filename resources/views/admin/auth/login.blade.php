@@ -48,22 +48,23 @@
         <form method="POST" action="{{ route('admin.login') }}" id="adminForm">
             @csrf
             <div class="form-group">
-                <label class="form-label">Administrator Email</label>
-                <input type="email" id="adminEmail" name="email" class="form-control" placeholder="admin@taskverse.com" value="{{ old('email', 'admin@taskverse.com') }}" required autofocus>
+                <label class="form-label" for="adminEmail">Administrator Email</label>
+                <input type="email" id="adminEmail" name="email" class="form-control" placeholder="admin@example.com" value="{{ old('email') }}" required autofocus>
             </div>
             <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" id="adminPass" name="password" class="form-control" placeholder="••••••••" value="password" required>
+                <label class="form-label" for="adminPass">Password</label>
+                <input type="password" id="adminPass" name="password" class="form-control" placeholder="Enter password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-full" style="padding:0.8rem;background:#0f172a;border-color:#0f172a;margin-top:0.5rem;">
+            <button type="submit" class="btn btn-primary w-full" style="padding:0.8rem;background:#0f172a;border-color:#0f172a;margin-top:0.5rem;font-weight:700;">
                 <span class="material-icons-round" style="font-size:18px;">lock_open</span> Access Admin Panel
             </button>
         </form>
 
-        <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;">
-            <a href="{{ route('home') }}" style="color:var(--muted);font-size:0.85rem;display:inline-flex;align-items:center;gap:4px;">
+        <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;font-size:0.82rem;">
+            <a href="{{ route('home') }}" style="color:var(--muted);display:inline-flex;align-items:center;gap:4px;">
                 <span class="material-icons-round" style="font-size:16px;">arrow_back</span> Return to Marketplace
             </a>
+            <span style="color:var(--muted);">Developed by <a href="https://faruk.stsoft.top/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;text-decoration:none;">FARUK</a></span>
         </div>
     </div>
 </body>

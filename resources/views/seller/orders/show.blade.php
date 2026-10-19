@@ -13,7 +13,7 @@
 @endsection
 @section('content')
 @php $b = $order->statusBadge(); @endphp
-<div style="display:grid;grid-template-columns:1fr 360px;gap:1.5rem;">
+<div class="order-detail-layout">
     <div>
         <!-- Order info -->
         <div class="card mb-4">
@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;">
+                <div class="grid-3col">
                     <div><div class="text-xs text-muted mb-1">Package</div><div class="font-semibold">{{ ucfirst($order->package) }}</div></div>
                     <div><div class="text-xs text-muted mb-1">Price</div><div class="font-bold" style="font-size:1.2rem;">${{ number_format($order->price,2) }}</div></div>
                     <div><div class="text-xs text-muted mb-1">Due Date</div><div class="font-semibold">{{ $order->due_at ? $order->due_at->format('M d, Y') : 'N/A' }}</div></div>
@@ -38,6 +38,24 @@
                 @endif
             </div>
         </div>
+
+        @if($order->review)
+        <div class="card mb-4" style="border:1px solid #fed7aa;background:#fffaf5;">
+            <div class="card-header" style="background:transparent;border-bottom:1px solid #fed7aa;">
+                <span class="material-icons-round" style="color:var(--star);font-size:20px;">star</span>
+                <strong>Buyer's Review on this Order</strong>
+            </div>
+            <div class="card-body">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:0.5rem;">
+                    @for($i=1;$i<=5;$i++)
+                        <span class="material-icons-round" style="font-size:18px;color:{{ $i <= $order->review->rating ? 'var(--star)' : '#cbd5e1' }};">star</span>
+                    @endfor
+                    <strong style="color:var(--dark);margin-left:4px;">{{ $order->review->rating }} / 5.0</strong>
+                </div>
+                <p style="font-size:0.92rem;color:#334155;line-height:1.5;">{{ $order->review->comment }}</p>
+            </div>
+        </div>
+        @endif
 
         <!-- Update Status -->
         @if(!in_array($order->status,['completed','cancelled']))

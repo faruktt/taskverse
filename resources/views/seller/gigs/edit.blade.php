@@ -29,7 +29,7 @@
 <form method="POST" action="{{ route('seller.gig.update', $gig) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;">
+    <div class="gig-form-layout">
         <div>
             <div class="card mb-4">
                 <div class="card-header"><span class="material-icons-round" style="vertical-align:middle;font-size:18px;">info</span> Basic Info</div>
@@ -61,7 +61,7 @@
             <div class="card mb-4">
                 <div class="card-header"><span class="material-icons-round" style="vertical-align:middle;font-size:18px;">inventory_2</span> Packages</div>
                 <div class="card-body">
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                    <div class="packages-grid">
                         <div>
                             <p style="font-weight:700;font-size:0.85rem;margin-bottom:0.75rem;color:var(--primary-light);">Basic</p>
                             <div class="form-group">

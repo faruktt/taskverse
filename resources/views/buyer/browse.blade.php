@@ -12,34 +12,51 @@
 <a href="{{ route('buyer.profile') }}" class="nav-link"><span class="material-icons-round">manage_accounts</span> Profile</a>
 @endsection
 @section('content')
-<div class="page-header"><h1>Browse Gigs</h1><p>Discover talented freelancers</p></div>
+<div class="page-header">
+    <h1>Browse Gigs</h1>
+    <p>Discover talented freelancers & professional services</p>
+</div>
+
+<!-- Category Pills (Fiverr Mobile Style Carousel) -->
+<div class="categories-bar mb-3" style="border-radius:8px;padding:6px 0;background:#ffffff;border:1px solid var(--border);">
+    <div style="display:flex;gap:0.5rem;overflow-x:auto;padding:0.25rem 0.75rem;scrollbar-width:none;-webkit-overflow-scrolling:touch;">
+        <a href="{{ route('buyer.browse', request()->except(['category', 'page'])) }}" class="badge {{ !request('category') ? 'badge-primary' : 'badge-muted' }}" style="padding:0.45rem 0.85rem;text-decoration:none;white-space:nowrap;font-size:0.82rem;border-radius:999px;">
+            All Categories
+        </a>
+        @foreach($categories as $cat)
+            <a href="{{ route('buyer.browse', array_merge(request()->except(['page']), ['category' => $cat->id])) }}" class="badge {{ request('category') == $cat->id ? 'badge-primary' : 'badge-muted' }}" style="padding:0.45rem 0.85rem;text-decoration:none;white-space:nowrap;font-size:0.82rem;border-radius:999px;display:inline-flex;align-items:center;gap:4px;">
+                <span class="material-icons-round" style="font-size:15px;color:{{ $cat->color }};">{{ $cat->icon }}</span>
+                {{ $cat->name }}
+            </a>
+        @endforeach
+    </div>
+</div>
 
 <!-- Search & Filter -->
-<form method="GET" action="{{ route('buyer.browse') }}" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem;">
-    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
-        <div style="flex:1;min-width:200px;">
-            <label class="form-label">Search</label>
-            <input type="text" name="q" class="form-control" placeholder="Search gigs..." value="{{ request('q') }}">
-        </div>
-        <div style="min-width:160px;">
-            <label class="form-label">Category</label>
-            <select name="category" class="form-control">
-                <option value="">All Categories</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div style="min-width:100px;">
-            <label class="form-label">Min Price</label>
-            <input type="number" name="min_price" class="form-control" placeholder="$0" value="{{ request('min_price') }}" min="0">
-        </div>
-        <div style="min-width:100px;">
-            <label class="form-label">Max Price</label>
-            <input type="number" name="max_price" class="form-control" placeholder="$999" value="{{ request('max_price') }}" min="0">
+<form method="GET" action="{{ route('buyer.browse') }}" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem;">
+    @if(request('category'))
+        <input type="hidden" name="category" value="{{ request('category') }}">
+    @endif
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;align-items:end;">
+        <div style="grid-column: 1 / -1;">
+            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Search Service</label>
+            <input type="text" name="q" class="form-control" placeholder="What service are you looking for?" value="{{ request('q') }}">
         </div>
         <div>
-            <button type="submit" class="btn btn-primary"><span class="material-icons-round">search</span> Filter</button>
+            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Min Price ($)</label>
+            <input type="number" name="min_price" class="form-control" placeholder="$0" value="{{ request('min_price') }}" min="0">
+        </div>
+        <div>
+            <label class="form-label" style="font-size:0.82rem;font-weight:700;">Max Price ($)</label>
+            <input type="number" name="max_price" class="form-control" placeholder="$999" value="{{ request('max_price') }}" min="0">
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+            <button type="submit" class="btn btn-primary w-full" style="justify-content:center;height:42px;">
+                <span class="material-icons-round" style="font-size:18px;">search</span> Filter
+            </button>
+            @if(request('q') || request('min_price') || request('max_price'))
+                <a href="{{ route('buyer.browse', request()->only(['category'])) }}" class="btn btn-secondary btn-sm" style="height:42px;display:flex;align-items:center;">Clear</a>
+            @endif
         </div>
     </div>
 </form>

@@ -13,7 +13,7 @@
 @endsection
 @section('content')
 @php $b = $order->statusBadge(); @endphp
-<div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;">
+<div class="order-detail-layout">
     <div>
         <div class="card mb-4">
             <div class="card-header">
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;">
+                <div class="grid-3col">
                     <div><div class="text-xs text-muted mb-1">Package</div><div class="font-semibold">{{ ucfirst($order->package) }}</div></div>
                     <div><div class="text-xs text-muted mb-1">Price</div><div class="font-bold" style="font-size:1.2rem;">${{ number_format($order->price,2) }}</div></div>
                     <div><div class="text-xs text-muted mb-1">Due Date</div><div class="font-semibold">{{ $order->due_at ? $order->due_at->format('M d, Y') : 'N/A' }}</div></div>
@@ -40,46 +40,65 @@
 
         <!-- Actions -->
         @if($order->status === 'delivered')
-        <div class="card mb-4">
-            <div class="card-header"><span class="material-icons-round" style="vertical-align:middle;font-size:18px;">task_alt</span> Review Delivery</div>
+        <div class="card mb-4" style="border:2px solid var(--primary-border);background:var(--primary-light);">
+            <div class="card-header" style="background:transparent;border-bottom:1px solid var(--primary-border);">
+                <span class="material-icons-round" style="color:var(--primary-dark);font-size:20px;">task_alt</span>
+                <strong style="color:var(--dark);">Seller Has Delivered Your Work!</strong>
+            </div>
             <div class="card-body">
-                <div class="flex gap-3">
+                <p style="font-size:0.9rem;color:var(--dark);margin-bottom:1rem;">
+                    Please inspect the delivered work. You can accept and rate this order below, or request revisions if needed.
+                </p>
+                <div class="flex gap-3" style="flex-wrap:wrap;">
                     <form method="POST" action="{{ route('buyer.order.complete', $order) }}">
                         @csrf
-                        <button type="submit" class="btn btn-success"><span class="material-icons-round">check_circle</span> Accept & Complete</button>
+                        <button type="submit" class="btn btn-success">
+                            <span class="material-icons-round">check_circle</span> Accept Delivery
+                        </button>
                     </form>
                     <form method="POST" action="{{ route('buyer.order.revision', $order) }}">
                         @csrf
-                        <button type="submit" class="btn btn-warning"><span class="material-icons-round">refresh</span> Request Revision</button>
+                        <button type="submit" class="btn btn-warning">
+                            <span class="material-icons-round">refresh</span> Request Revision
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
         @endif
 
-        <!-- Review -->
-        @if($order->status === 'completed' && !$order->review)
-        <div class="card mb-4">
-            <div class="card-header"><span class="material-icons-round" style="vertical-align:middle;font-size:18px;">star</span> Leave a Review</div>
+        <!-- Review & Rating (Shows upon delivery or completion) -->
+        @if(in_array($order->status, ['delivered', 'completed']) && !$order->review)
+        <div class="card mb-4" style="border:1px solid var(--border);box-shadow:var(--shadow-sm);">
+            <div class="card-header" style="background:#fafafa;">
+                <span class="material-icons-round" style="color:var(--star);font-size:20px;">star</span>
+                <strong>Rate & Review This Service</strong>
+            </div>
             <div class="card-body">
+                <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1.25rem;">
+                    Your feedback will be published on the seller's gig and helps other buyers find great freelancers.
+                </p>
                 <form method="POST" action="{{ route('buyer.order.review', $order) }}">
                     @csrf
                     <div class="form-group">
-                        <label class="form-label">Rating</label>
-                        <div style="display:flex;gap:0.5rem;">
+                        <label class="form-label">Your Rating (1 to 5 Stars)</label>
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
                             @for($i=1;$i<=5;$i++)
-                            <label style="cursor:pointer;font-size:1.5rem;color:var(--border);" id="star-{{ $i }}" onclick="setRating({{ $i }})">
-                                <span class="material-icons-round">star</span>
-                                <input type="radio" name="rating" value="{{ $i }}" style="display:none;">
+                            <label style="cursor:pointer;font-size:1.75rem;color:var(--star);" id="star-{{ $i }}" onclick="setRating({{ $i }})">
+                                <span class="material-icons-round" style="font-size:28px;">star</span>
+                                <input type="radio" name="rating" value="{{ $i }}" {{ $i == 5 ? 'checked' : '' }} style="display:none;">
                             </label>
                             @endfor
+                            <span id="ratingLabel" style="font-size:0.85rem;font-weight:700;color:var(--dark);margin-left:8px;">5 Stars</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Comment</label>
-                        <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+                        <label class="form-label">Review Comment</label>
+                        <textarea name="comment" class="form-control" rows="3" placeholder="Describe the quality of delivery, communication, and overall experience..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary"><span class="material-icons-round">send</span> Submit Review</button>
+                    <button type="submit" class="btn btn-primary" style="font-weight:700;">
+                        <span class="material-icons-round">rate_review</span> Submit &amp; Publish Review
+                    </button>
                 </form>
             </div>
         </div>
@@ -144,11 +163,15 @@
 
 <script>
 function setRating(r) {
+    const labels = { 1: '1 Star (Poor)', 2: '2 Stars (Fair)', 3: '3 Stars (Good)', 4: '4 Stars (Very Good)', 5: '5 Stars (Excellent)' };
     for(let i=1;i<=5;i++) {
         const el = document.getElementById('star-'+i);
-        if(el) el.style.color = i<=r ? 'var(--warning)' : 'var(--border)';
+        if(el) el.style.color = i<=r ? 'var(--star)' : '#cbd5e1';
     }
-    document.querySelector('input[name="rating"][value="'+r+'"]').checked = true;
+    const input = document.querySelector('input[name="rating"][value="'+r+'"]');
+    if(input) input.checked = true;
+    const lbl = document.getElementById('ratingLabel');
+    if(lbl) lbl.textContent = labels[r] || (r + ' Stars');
 }
 const chat = document.getElementById('chatMessages');
 if(chat) chat.scrollTop = chat.scrollHeight;

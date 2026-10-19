@@ -62,6 +62,7 @@ Route::middleware(['auth','App\Http\Middleware\BannedUserMiddleware','App\Http\M
     Route::post('/order/{order}/status', [SellerController::class, 'updateOrderStatus'])->name('order.status');
     Route::get('/profile',               [SellerController::class, 'profile'])->name('profile');
     Route::post('/profile',              [SellerController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/withdraw',             [SellerController::class, 'withdraw'])->name('withdraw');
 });
 
 /* ══════════════════════════════════════════
@@ -91,6 +92,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/gig/{gig}/reject',   [AdminController::class, 'rejectGig'])->name('gig.reject');
         Route::delete('/gig/{gig}',        [AdminController::class, 'deleteGig'])->name('gig.delete');
         Route::get('/orders',              [AdminController::class, 'orders'])->name('orders');
+        Route::get('/withdrawals',         [AdminController::class, 'withdrawals'])->name('withdrawals');
+        Route::post('/withdrawal/{withdrawal}/approve', [AdminController::class, 'approveWithdrawal'])->name('withdrawal.approve');
+        Route::post('/withdrawal/{withdrawal}/reject',  [AdminController::class, 'rejectWithdrawal'])->name('withdrawal.reject');
         Route::get('/categories',          [AdminController::class, 'categories'])->name('categories');
         Route::post('/categories',         [AdminController::class, 'storeCategory'])->name('categories.store');
         Route::delete('/category/{category}', [AdminController::class, 'deleteCategory'])->name('category.delete');

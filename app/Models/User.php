@@ -33,6 +33,22 @@ class User extends Authenticatable
     public function buyerOrders()  { return $this->hasMany(Order::class, 'buyer_id'); }
     public function sellerOrders() { return $this->hasMany(Order::class, 'seller_id'); }
     public function reviews()      { return $this->hasMany(Review::class, 'buyer_id'); }
+    public function withdrawals()  { return $this->hasMany(Withdrawal::class); }
+
+    public function totalEarnings(): float
+    {
+        return (float) $this->sellerOrders()->where('status', 'completed')->sum('price');
+    }
+
+    public function totalWithdrawn(): float
+    {
+        return (float) $this->withdrawals()->whereIn('status', ['completed', 'pending'])->sum('amount');
+    }
+
+    public function availableBalance(): float
+    {
+        return (float) max(0, $this->totalEarnings() - $this->totalWithdrawn());
+    }
 
     public function avatarUrl(): string
     {

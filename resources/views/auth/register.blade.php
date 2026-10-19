@@ -94,6 +94,26 @@
             color: var(--muted);
             margin-top: 2px;
         }
+
+        @media (max-width: 576px) {
+            .auth-nav {
+                padding: 1rem 1.25rem;
+            }
+            .auth-container {
+                padding: 1rem;
+                align-items: flex-start;
+            }
+            .fiverr-auth-card {
+                padding: 1.75rem 1.25rem;
+                border-radius: 8px;
+            }
+            .fiverr-auth-card h1 {
+                font-size: 1.35rem;
+            }
+            .role-selector {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -172,7 +192,7 @@
     </main>
 
     <footer style="padding:1.5rem;text-align:center;font-size:0.82rem;color:var(--muted-light);border-top:1px solid var(--border);">
-        &copy; {{ date('Y') }} TaskVerse International Ltd. All rights reserved.
+        &copy; {{ date('Y') }} TaskVerse International Ltd. All rights reserved. &bull; Developed by <a href="https://faruk.stsoft.top/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;text-decoration:none;">FARUK</a>
     </footer>
 
     <script>

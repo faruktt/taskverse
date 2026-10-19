@@ -22,10 +22,15 @@
     <!-- 1. Top Navbar (Fiverr Style Header) -->
     <header class="site-header">
         <div class="navbar-main">
-            <!-- Brand Logo -->
-            <a href="{{ route('home') }}" class="logo-brand">
-                TaskVerse<span class="brand-dot">.</span>
-            </a>
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+                    <span class="material-icons-round">menu</span>
+                </button>
+                <!-- Brand Logo -->
+                <a href="{{ route('home') }}" class="logo-brand">
+                    TaskVerse<span class="brand-dot">.</span>
+                </a>
+            </div>
 
             <!-- Search in Header -->
             <form action="{{ route('buyer.browse') }}" method="GET" class="header-search">
@@ -35,7 +40,7 @@
             </form>
 
             <!-- Navigation Links -->
-            <nav class="nav-links">
+            <nav class="nav-links" id="siteNavLinks">
                 <a href="{{ route('buyer.browse') }}" style="color:var(--dark);">Explore</a>
 
                 @auth
@@ -61,11 +66,6 @@
                     <a href="{{ route('login') }}" style="color:var(--dark);">Sign in</a>
                     <a href="{{ route('register') }}" class="btn btn-outline btn-sm" style="border-radius:4px;padding:0.45rem 1.1rem;">Join</a>
                 @endauth
-
-                <!-- Admin discreet access -->
-                <a href="{{ route('admin.login') }}" style="color:var(--muted-light);font-size:0.82rem;display:inline-flex;align-items:center;gap:4px;" title="Admin Portal">
-                    <span class="material-icons-round" style="font-size:16px;">shield</span> Admin
-                </a>
             </nav>
         </div>
 
@@ -274,22 +274,7 @@
         </div>
     </div>
 
-    <!-- 9. Quick Demo Testing Bar -->
-    <div class="container">
-        <div class="demo-bar">
-            <div style="display:flex;align-items:center;gap:8px;font-weight:600;color:var(--dark);">
-                <span class="material-icons-round" style="color:var(--primary);font-size:18px;">vpn_key</span>
-                One-Click Demo Credentials:
-            </div>
-            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-                <span class="demo-pill">Admin: <strong>admin@taskverse.com</strong> / password</span>
-                <span class="demo-pill">Seller: <strong>seller@taskverse.com</strong> / password</span>
-                <span class="demo-pill">Buyer: <strong>buyer@taskverse.com</strong> / password</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 10. Clean Production Footer -->
+    <!-- 9. Clean Production Footer -->
     <footer class="site-footer">
         <div class="footer-cols">
             <div class="footer-col">
@@ -325,7 +310,6 @@
                     <li><a href="{{ route('login') }}">Member Sign In</a></li>
                     <li><a href="{{ route('register', ['role' => 'seller']) }}">Become a Seller</a></li>
                     <li><a href="{{ route('buyer.browse') }}">Browse Catalog</a></li>
-                    <li><a href="{{ route('admin.login') }}" style="color:var(--primary);font-weight:600;">Admin Control Panel</a></li>
                 </ul>
             </div>
         </div>
@@ -335,6 +319,9 @@
                 TaskVerse<span style="color:var(--primary);font-size:1.4rem;line-height:0;">.</span>
                 <span style="font-size:0.85rem;font-weight:400;color:var(--muted);margin-left:12px;">&copy; {{ date('Y') }} TaskVerse International Ltd.</span>
             </div>
+            <div style="font-size:0.88rem;color:var(--muted);font-weight:500;">
+                Developed by <a href="https://faruk.stsoft.top/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;text-decoration:none;">FARUK</a>
+            </div>
             <div style="display:flex;align-items:center;gap:1.5rem;">
                 <span style="display:flex;align-items:center;gap:4px;"><span class="material-icons-round" style="font-size:18px;">language</span> English</span>
                 <span style="display:flex;align-items:center;gap:4px;"><span class="material-icons-round" style="font-size:18px;">attach_money</span> USD</span>
@@ -342,5 +329,58 @@
         </div>
     </footer>
 
+    <!-- Fiverr-Style Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+        <a href="{{ route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+            <span class="material-icons-round">home</span>
+            <span>Home</span>
+        </a>
+        <a href="{{ route('buyer.browse') }}" class="mobile-nav-item {{ request()->routeIs('buyer.browse') ? 'active' : '' }}">
+            <span class="material-icons-round">explore</span>
+            <span>Explore</span>
+        </a>
+        @auth
+            @if(auth()->user()->role === 'seller')
+                <a href="{{ route('seller.dashboard') }}" class="mobile-nav-item">
+                    <span class="material-icons-round">dashboard</span>
+                    <span>Hub</span>
+                </a>
+                <a href="{{ route('seller.orders') }}" class="mobile-nav-item">
+                    <span class="material-icons-round">receipt_long</span>
+                    <span>Orders</span>
+                </a>
+            @else
+                <a href="{{ route('buyer.dashboard') }}" class="mobile-nav-item">
+                    <span class="material-icons-round">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('buyer.orders') }}" class="mobile-nav-item">
+                    <span class="material-icons-round">shopping_bag</span>
+                    <span>Orders</span>
+                </a>
+            @endif
+        @else
+            <a href="{{ route('login') }}" class="mobile-nav-item {{ request()->routeIs('login') ? 'active' : '' }}">
+                <span class="material-icons-round">login</span>
+                <span>Sign In</span>
+            </a>
+            <a href="{{ route('register') }}" class="mobile-nav-item {{ request()->routeIs('register') ? 'active' : '' }}">
+                <span class="material-icons-round">person_add</span>
+                <span>Join</span>
+            </a>
+        @endauth
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toggleBtn = document.getElementById('mobileMenuBtn');
+            var navLinks = document.getElementById('siteNavLinks');
+            if (toggleBtn && navLinks) {
+                toggleBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('open');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

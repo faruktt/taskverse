@@ -13,10 +13,18 @@
 </head>
 <body>
 <div class="app-shell">
-    <aside class="sidebar">
+    <!-- Sidebar Backdrop for Mobile -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <aside class="sidebar" id="appSidebar">
         <div class="sidebar-logo">
-            <div class="logo-text">TaskVerse</div>
-            <div class="logo-sub" style="color:#fd79a8;">Admin Panel</div>
+            <div>
+                <div class="logo-text">TaskVerse</div>
+                <div class="logo-sub" style="color:#fd79a8;">Admin Panel</div>
+            </div>
+            <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close Sidebar">
+                <span class="material-icons-round">close</span>
+            </button>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section-label">Management</div>
@@ -31,6 +39,15 @@
             </a>
             <a href="{{ route('admin.orders') }}" class="nav-link {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
                 <span class="material-icons-round">receipt_long</span> Orders
+            </a>
+            <a href="{{ route('admin.withdrawals') }}" class="nav-link {{ request()->routeIs('admin.withdrawals*') ? 'active' : '' }}">
+                <span class="material-icons-round">account_balance_wallet</span> Withdrawals
+                @php
+                    $pendingWithdrawalsCount = \App\Models\Withdrawal::where('status', 'pending')->count();
+                @endphp
+                @if($pendingWithdrawalsCount > 0)
+                    <span class="badge badge-warning" style="margin-left:auto;font-size:0.7rem;padding:0.15rem 0.45rem;">{{ $pendingWithdrawalsCount }}</span>
+                @endif
             </a>
             <a href="{{ route('admin.categories') }}" class="nav-link {{ request()->routeIs('admin.categories') ? 'active' : '' }}">
                 <span class="material-icons-round">category</span> Categories
@@ -55,7 +72,12 @@
 
     <div class="main-content">
         <header class="topbar">
-            <div class="topbar-title">@yield('page-title', 'Admin')</div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Open Sidebar">
+                    <span class="material-icons-round">menu</span>
+                </button>
+                <div class="topbar-title">@yield('page-title', 'Admin')</div>
+            </div>
             <div class="topbar-actions">@yield('topbar-actions')</div>
         </header>
         <main class="page-content">
@@ -67,7 +89,69 @@
             @endif
             @yield('content')
         </main>
+
+        <footer style="padding:1.25rem 2rem;border-top:1px solid var(--border);text-align:center;font-size:0.82rem;color:var(--muted);background:#ffffff;margin-top:auto;">
+            &copy; {{ date('Y') }} TaskVerse Admin. &bull; Developed by <a href="https://faruk.stsoft.top/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;text-decoration:none;">FARUK</a>
+        </footer>
     </div>
 </div>
+
+<!-- Admin Mobile Bottom Navigation Bar -->
+<nav class="mobile-bottom-nav">
+    <a href="{{ route('admin.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+        <span class="material-icons-round">dashboard</span>
+        <span>Overview</span>
+    </a>
+    <a href="{{ route('admin.users') }}" class="mobile-nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+        <span class="material-icons-round">people</span>
+        <span>Users</span>
+    </a>
+    <a href="{{ route('admin.orders') }}" class="mobile-nav-item {{ request()->routeIs('admin.orders*') ? 'active' : '' }}">
+        <span class="material-icons-round">receipt_long</span>
+        <span>Orders</span>
+    </a>
+    <a href="{{ route('admin.withdrawals') }}" class="mobile-nav-item {{ request()->routeIs('admin.withdrawals*') ? 'active' : '' }}">
+        <span class="material-icons-round">account_balance_wallet</span>
+        <span>Payouts</span>
+        @php
+            $pendingWCount = \App\Models\Withdrawal::where('status', 'pending')->count();
+        @endphp
+        @if($pendingWCount > 0)
+            <span style="position:absolute;top:6px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
+        @endif
+    </a>
+    <a href="javascript:void(0)" class="mobile-nav-item" id="adminMobileDrawerBtn">
+        <span class="material-icons-round">menu</span>
+        <span>Menu</span>
+    </a>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var toggleBtn = document.getElementById('sidebarToggleBtn');
+        var closeBtn = document.getElementById('sidebarCloseBtn');
+        var sidebar = document.getElementById('appSidebar');
+        var backdrop = document.getElementById('sidebarBackdrop');
+        var mobileDrawerBtn = document.getElementById('adminMobileDrawerBtn');
+
+        function openSidebar() {
+            if (sidebar) sidebar.classList.add('open');
+            if (backdrop) backdrop.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (backdrop) backdrop.addEventListener('click', closeSidebar);
+        if (mobileDrawerBtn) mobileDrawerBtn.addEventListener('click', openSidebar);
+    });
+</script>
+@stack('scripts')
 </body>
 </html>
